@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brazilian Portuguese Alphabet Soundboard</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #f0f0f0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; width: 90%; max-width: 800px; padding: 20px; }
+        .letter-card { background: white; border: 2px solid #333; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: transform 0.1s; }
+        .letter-card:active { transform: scale(0.95); background-color: #e0e0e0; }
+        .letter { font-size: 2.5em; font-weight: bold; }
+        .phonetic { font-size: 0.9em; color: #666; display: block; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Alfabeto Brasileiro</h1>
+    <div class="grid" id="alphabet-grid"></div>
+
+    <script>
+        // Brazilian Portuguese alphabet with approximate names
+        const alphabet = [
+            { char: 'A', name: 'ah' }, { char: 'B', name: 'bê' }, { char: 'C', name: 'cê' },
+            { char: 'D', name: 'dê' }, { char: 'E', name: 'é/ê' }, { char: 'F', name: 'efe' },
+            { char: 'G', name: 'gê' }, { char: 'H', name: 'agá' }, { char: 'I', name: 'i' },
+            { char: 'J', name: 'jota' }, { char: 'K', name: 'ká' }, { char: 'L', name: 'éle' },
+            { char: 'M', name: 'éme' }, { char: 'N', name: 'éne' }, { char: 'O', name: 'ó/ô' },
+            { char: 'P', name: 'pê' }, { char: 'Q', name: 'quê' }, { char: 'R', name: 'érre' },
+            { char: 'S', name: 'ésse' }, { char: 'T', name: 'tê' }, { char: 'U', name: 'u' },
+            { char: 'V', name: 'vê' }, { char: 'W', name: 'dáblio' }, { char: 'X', name: 'xis' },
+            { char: 'Y', name: 'ípsilon' }, { char: 'Z', name: 'zê' }
+        ];
+
+        const grid = document.getElementById('alphabet-grid');
+
+        alphabet.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'letter-card';
+            card.innerHTML = `<span class="letter">${item.char}</span><span class="phonetic">${item.name}</span>`;
+            
+            card.onclick = () => {
+                // Assumes files are named 'a.mp3', 'b.mp3', etc. in the assets folder
+                const audio = new Audio(`assets/${item.char.toLowerCase()}.mp3`);
+                audio.play().catch(e => console.error("Audio file not found:", e));
+            };
+            
+            grid.appendChild(card);
+        });
+    </script>
+</body>
+</html>
