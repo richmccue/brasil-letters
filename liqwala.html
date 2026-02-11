@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liqʼwala Alphabet Soundboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        h1 { color: #333; }
+        .alphabet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+            max-width: 800px;
+            width: 100%;
+        }
+        .letter-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+        .letter-card:hover {
+            border-color: #007bff;
+            background-color: #e7f1ff;
+            transform: translateY(-2px);
+        }
+        .letter-card:active {
+            transform: translateY(0);
+            background-color: #d0e3ff;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Liqʼwala Alphabet Soundboard</h1>
+    <p>Click a letter to hear its pronunciation</p>
+
+    <div class="alphabet-grid" id="grid">
+        </div>
+
+    <script>
+        const letters = "a ə b c c̓ d dᶻ e g gʷ ǧ ǧʷ h i k k̓ kʷ k̓ʷ l l̓ ł λ ƛ ƛ̓ m m̓ n n̓ o p p̓ q qʷ q̓ q̓ʷ s t t̓ u w w̓ x xʷ x̌ x̌ʷ y y̓ ʔ".split(' ');
+
+        const grid = document.getElementById('grid');
+
+        letters.forEach(letter => {
+            const card = document.createElement('div');
+            card.className = 'letter-card';
+            card.innerText = letter;
+            
+            card.onclick = () => {
+                // Map the character to a safe filename
+                // This removes special marks for the filename if needed
+                let fileName = encodeURIComponent(letter); 
+                playAudio(fileName);
+            };
+            
+            grid.appendChild(card);
+        });
+
+        function playAudio(name) {
+            // Assumes your files are in the 'assets' folder as .mp3
+            const audio = new Audio(`assets/${name}.mp3`);
+            audio.play().catch(err => {
+                console.error("Audio file not found for:", name);
+                alert(`Audio file for "${decodeURIComponent(name)}" not found in assets/`);
+            });
+        }
+    </script>
+    <p style="text-align: center;">Inspired by the <a href="https://dom-aya.github.io/ayajuthem-soundboard/">ʔayʔaǰuθəm soundboard</a> - <a href="https://github.com/dom-aya/ayajuthem-lingo">GitHub Repository for the ʔayʔaǰuθəm project</a></p>
+</body>
+</html>
