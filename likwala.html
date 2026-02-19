@@ -6,9 +6,9 @@
     <title>Likʼwala Alphabet Soundboard</title>
     
     <style>
-        /* 1. STYLES (The Visual Design) */
         :root {
             --primary-color: #00a8ff; 
+            --highlight-color: #2ecc71; /* A nice green for the playing state */
             --bg-color: #f9f9f9;      
         }
 
@@ -32,7 +32,6 @@
 
         .alphabet-grid {
             display: grid;
-            /* Creates as many columns as will fit on the screen */
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 15px;
             max-width: 900px;
@@ -54,16 +53,18 @@
             user-select: none; 
         }
 
-        /* Changes the look when the mouse hovers over a letter */
         .letter-card:hover {
             border-color: var(--primary-color);
             transform: translateY(-3px);
-            background-color: #f0f9ff;
         }
 
-        /* Briefly shrinks the card when clicked for a "button press" feel */
-        .letter-card:active {
-            transform: scale(0.95);
+        /* 1. THE HIGHLIGHT STYLE */
+        /* This class is added via JavaScript when the sound starts */
+        .letter-card.playing {
+            border-color: var(--highlight-color);
+            background-color: #e8f8f0;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -77,10 +78,6 @@
     <div class="alphabet-grid" id="grid"></div>
 
     <script>
-        /**
-         * 2. DATA (The Alphabet Map)
-         * This object links the Likʼwala character to the audio filename.
-         */
         const likwalaMap = {
             "a": "a", "ə": "schwa", "b": "b", "c": "c", "c̓": "c_glottal", 
             "d": "d", "dᶻ": "dz", "e": "e", "g": "g", "gʷ": "g_w", 
@@ -98,33 +95,39 @@
 
         const grid = document.getElementById('grid');
 
-        /**
-         * 3. INITIALIZATION
-         * This script runs once when the page loads to build the grid.
-         */
         Object.keys(likwalaMap).forEach(letter => {
             const card = document.createElement('div');
             card.className = 'letter-card';
             card.innerText = letter;
             
-            // Trigger playback when clicked
             card.onclick = () => {
                 const fileName = likwalaMap[letter];
-                playAudio(fileName);
+                playAudio(fileName, card); // We pass the 'card' element to the function
             };
             
             grid.appendChild(card);
         });
 
         /**
-         * 4. AUDIO LOGIC
-         * Creates a new audio instance for every click.
+         * playAudio(fileName, element)
+         * Uses event listeners to watch the audio state.
          */
-        function playAudio(fileName) {
+        function playAudio(fileName, element) {
             const audio = new Audio(`assets/${fileName}.mp3`);
             
+            // When the audio starts playing, add the "playing" class
+            audio.onplay = () => {
+                element.classList.add('playing');
+            };
+
+            // When the audio finishes, remove the class
+            audio.onended = () => {
+                element.classList.remove('playing');
+            };
+
             audio.play().catch(err => {
                 console.error(`Error: Could not find assets/${fileName}.mp3`);
+                element.classList.remove('playing'); // Cleanup if file fails
             });
         }
     </script>
