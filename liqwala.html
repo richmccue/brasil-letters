@@ -9,7 +9,6 @@
         /* 1. STYLES (The Visual Design) */
         :root {
             --primary-color: #00a8ff; 
-            --danger-color: #e74c3c;  
             --bg-color: #f9f9f9;      
         }
 
@@ -26,33 +25,14 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
-            position: sticky;
-            top: 0;
-            background: var(--bg-color);
             width: 100%;
             padding: 10px 0;
-            z-index: 10;
             border-bottom: 1px solid #ddd;
         }
 
-        .stop-btn {
-            background-color: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
-            transition: transform 0.1s, background-color 0.2s;
-        }
-
-        .stop-btn:hover { background-color: #c0392b; }
-        .stop-btn:active { transform: scale(0.95); }
-
         .alphabet-grid {
             display: grid;
+            /* Creates as many columns as will fit on the screen */
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 15px;
             max-width: 900px;
@@ -74,10 +54,16 @@
             user-select: none; 
         }
 
+        /* Changes the look when the mouse hovers over a letter */
         .letter-card:hover {
             border-color: var(--primary-color);
             transform: translateY(-3px);
             background-color: #f0f9ff;
+        }
+
+        /* Briefly shrinks the card when clicked for a "button press" feel */
+        .letter-card:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -85,9 +71,6 @@
 
     <div class="header">
         <h1>Likʼwala Alphabet</h1>
-        <div class="controls">
-            <button class="stop-btn" onclick="stopAudio()">STOP SOUND</button>
-        </div>
         <p>Click a tile to hear the pronunciation</p>
     </div>
 
@@ -95,8 +78,8 @@
 
     <script>
         /**
-         * 2. DATA (The "Brain" of the page)
-         * Maps Likʼwala characters to standard filenames in your /assets folder.
+         * 2. DATA (The Alphabet Map)
+         * This object links the Likʼwala character to the audio filename.
          */
         const likwalaMap = {
             "a": "a", "ə": "schwa", "b": "b", "c": "c", "c̓": "c_glottal", 
@@ -113,21 +96,18 @@
             "y": "y", "y̓": "y_glottal", "ʔ": "glottal_stop"
         };
 
-        // Track the currently playing sound
-        let currentAudio = null; 
-
-        // Target the grid element
         const grid = document.getElementById('grid');
 
         /**
          * 3. INITIALIZATION
-         * Loops through the likwalaMap and creates buttons.
+         * This script runs once when the page loads to build the grid.
          */
         Object.keys(likwalaMap).forEach(letter => {
             const card = document.createElement('div');
             card.className = 'letter-card';
             card.innerText = letter;
             
+            // Trigger playback when clicked
             card.onclick = () => {
                 const fileName = likwalaMap[letter];
                 playAudio(fileName);
@@ -137,31 +117,16 @@
         });
 
         /**
-         * 4. AUDIO FUNCTIONS
-         * playAudio(fileName): Stops previous sounds and plays the requested one.
+         * 4. AUDIO LOGIC
+         * Creates a new audio instance for every click.
          */
         function playAudio(fileName) {
-            stopAudio();
-
-            // Create new Audio object from the assets folder
-            currentAudio = new Audio(`assets/${fileName}.mp3`);
-
-            currentAudio.play().catch(err => {
+            const audio = new Audio(`assets/${fileName}.mp3`);
+            
+            audio.play().catch(err => {
                 console.error(`Error: Could not find assets/${fileName}.mp3`);
-                alert(`File assets/${fileName}.mp3 is missing!`);
             });
         }
-
-        /**
-         * stopAudio(): Pauses and resets audio.
-         */
-        function stopAudio() {
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0; 
-            }
-        }
     </script>
-    <p style="text-align: center;">Inspired by the <a href="https://dom-aya.github.io/ayajuthem-soundboard/">ʔayʔaǰuθəm soundboard</a> - <a href="https://github.com/dom-aya/ayajuthem-lingo">GitHub Repository for the ʔayʔaǰuθəm project</a></p>
 </body>
 </html>
