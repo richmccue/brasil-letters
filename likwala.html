@@ -32,10 +32,10 @@
 
         .alphabet-grid {
             display: grid;
-            /* Wider cards to fit both text and image */
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 20px;
-            max-width: 1000px;
+            /* 1. Updated width: Reduced from 140px to 100px (~30% smaller) */
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            max-width: 900px;
             width: 100%;
             margin-top: 20px;
         }
@@ -44,48 +44,49 @@
             background: #fff;
             border: 2px solid #eee;
             border-radius: 12px;
-            height: 140px; /* Fixed height for consistency */
-            position: relative; /* Necessary to position the letter in the top-left */
+            /* 2. Updated height: Reduced from 140px to 100px (~30% smaller) */
+            height: 100px; 
+            position: relative; 
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             display: flex;
-            align-items: flex-end; /* Pushes the image to the bottom */
-            justify-content: flex-end; /* Pushes the image to the right */
-            padding: 10px;
+            align-items: flex-end; 
+            justify-content: flex-end; 
+            padding: 8px;
             overflow: hidden;
             user-select: none;
         }
 
-        /* 1. POSITIONING THE LETTER */
+        /* 3. Text size remains the same (1.4rem) */
         .card-label {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 5px;
+            left: 8px;
             font-size: 1.4rem;
             font-weight: bold;
             color: #333;
             z-index: 2;
         }
 
-        /* 2. THE IMAGE STYLE */
+        /* 4. Images scale automatically based on the card's smaller size */
         .card-image {
-            max-width: 80%;
-            max-height: 80%;
+            max-width: 70%;
+            max-height: 70%;
             object-fit: contain;
-            pointer-events: none; /* Clicks go through to the card */
+            pointer-events: none;
         }
 
         .letter-card:hover {
             border-color: var(--primary-color);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .letter-card.playing {
             border-color: var(--highlight-color);
             background-color: #e8f8f0;
-            box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
-            transform: scale(1.05);
+            box-shadow: 0 0 12px rgba(46, 204, 113, 0.4);
+            transform: scale(1.03);
         }
     </style>
 </head>
@@ -100,9 +101,10 @@
 
     <script>
         /**
-         * DATA MAP
-         * KEY: The Likʼwala character.
-         * VALUE: The base filename for both audio (.mp3) and images (.png).
+         * DOCUMENTATION FOR BEGINNERS:
+         * To change the size further, look at the ".alphabet-grid" and ".letter-card" 
+         * sections in the <style> tag above. Changing the 'px' (pixel) values 
+         * will grow or shrink the buttons.
          */
         const likwalaMap = {
             "a": "a", "ə": "schwa", "b": "b", "c": "c", "c̓": "c_glottal", 
@@ -123,26 +125,21 @@
 
         Object.keys(likwalaMap).forEach(letter => {
             const fileName = likwalaMap[letter];
-
-            // Create the card
             const card = document.createElement('div');
             card.className = 'letter-card';
             
-            // Create the letter label (Top Left)
             const label = document.createElement('span');
             label.className = 'card-label';
             label.innerText = letter;
             
-            // Create the image (Bottom Right)
             const img = document.createElement('img');
             img.className = 'card-image';
-            img.src = `images/${fileName}.png`; // Assumes PNG files
+            img.src = `images/${fileName}.png`; 
             img.alt = `Illustration for ${letter}`;
 
-            // Handle image error (if image is missing)
+            // Hide the image element if the file is missing so it doesn't show a "broken" icon
             img.onerror = () => { img.style.display = 'none'; };
 
-            // Assemble the card
             card.appendChild(label);
             card.appendChild(img);
             
@@ -155,10 +152,8 @@
 
         function playAudio(fileName, element) {
             const audio = new Audio(`assets/${fileName}.mp3`);
-            
             audio.onplay = () => element.classList.add('playing');
             audio.onended = () => element.classList.remove('playing');
-
             audio.play().catch(err => {
                 console.error(`Audio missing: assets/${fileName}.mp3`);
                 element.classList.remove('playing');
