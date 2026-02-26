@@ -101,28 +101,29 @@
 
     <script>
         /**
-         * DOCUMENTATION FOR BEGINNERS:
-         * To change the size further, look at the ".alphabet-grid" and ".letter-card" 
-         * sections in the <style> tag above. Changing the 'px' (pixel) values 
-         * will grow or shrink the buttons.
+         * DATA MAP
+         * The order of these keys determines the order the buttons appear on screen.
+         * I have moved "ə" to appear after "e".
          */
         const likwalaMap = {
-            "a": "a", "b": "b", "c": "c", "c̓": "c_glottal", 
-            "d": "d", "dᶻ": "dz", "e": "e", "ə": "schwa", "g": "g", "gʷ": "g_w", 
-            "ǧ": "g_wedge", "ǧʷ": "g_wedge_w", "h": "h", "i": "i", 
-            "k": "k", "k̓": "k_glottal", "kʷ": "k_w", "k̓ʷ": "k_w_glottal", 
-            "l": "l", "l̓": "l_glottal", "ł": "l_barred", "λ": "lambda", 
-            "ƛ": "lambda_barred", "ƛ̓": "lambda_barred_glottal", "m": "m", 
-            "m̓": "m_glottal", "n": "n", "n̓": "n_glottal", "o": "o", 
-            "p": "p", "p̓": "p_glottal", "q": "q", "qʷ": "q_w", 
-            "q̓": "q_glottal", "q̓ʷ": "q_w_glottal", "s": "s", "t": "t", 
-            "t̓": "t_glottal", "u": "u", "w": "w", "w̓": "w_glottal", 
-            "x": "x", "xʷ": "x_w", "x̌": "x_wedge", "x̌ʷ": "x_wedge_w", 
-            "y": "y", "y̓": "y_glottal", "ʔ": "glottal_stop"
+            "a": "a", 
+            "b": "b", "c": "c", "c̓": "c_glottal", "d": "d", "dᶻ": "dz", 
+            "e": "e", 
+            "ə": "schwa", // Moved here
+            "g": "g", "gʷ": "g_w", "ǧ": "g_wedge", "ǧʷ": "g_wedge_w", 
+            "h": "h", "i": "i", "k": "k", "k̓": "k_glottal", "kʷ": "k_w", 
+            "k̓ʷ": "k_w_glottal", "l": "l", "l̓": "l_glottal", "ł": "l_barred", 
+            "λ": "lambda", "ƛ": "lambda_barred", "ƛ̓": "lambda_barred_glottal", 
+            "m": "m", "m̓": "m_glottal", "n": "n", "n̓": "n_glottal", "o": "o", 
+            "p": "p", "p̓": "p_glottal", "q": "q", "qʷ": "q_w", "q̓": "q_glottal", 
+            "q̓ʷ": "q_w_glottal", "s": "s", "t": "t", "t̓": "t_glottal", "u": "u", 
+            "w": "w", "w̓": "w_glottal", "x": "x", "xʷ": "x_w", "x̌": "x_wedge", 
+            "x̌ʷ": "x_wedge_w", "y": "y", "y̓": "y_glottal", "ʔ": "glottal_stop"
         };
 
         const grid = document.getElementById('grid');
 
+        // This function creates the cards in the exact order they appear in the Map above
         Object.keys(likwalaMap).forEach(letter => {
             const fileName = likwalaMap[letter];
             const card = document.createElement('div');
@@ -135,9 +136,7 @@
             const img = document.createElement('img');
             img.className = 'card-image';
             img.src = `images/${fileName}.png`; 
-            img.alt = `Illustration for ${letter}`;
 
-            // Hide the image element if the file is missing so it doesn't show a "broken" icon
             img.onerror = () => { img.style.display = 'none'; };
 
             card.appendChild(label);
