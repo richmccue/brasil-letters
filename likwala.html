@@ -6,7 +6,6 @@
     <title>Likʼwala Alphabet Soundboard</title>
     
     <style>
-        /* 1. STYLES (The Visual Design) */
         :root {
             --primary-color: #00a8ff; 
             --highlight-color: #2ecc71; 
@@ -34,7 +33,6 @@
 
         .alphabet-grid {
             display: grid;
-            /* Cards are roughly 100px wide to fit the "30% smaller" requirement */
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 15px;
             max-width: 900px;
@@ -60,18 +58,18 @@
             user-select: none;
         }
 
-        /* The Likʼwala letter in the top-left */
+        /* UPDATED: Font size increased by 50% (from 1.4rem to 2.1rem) */
         .card-label {
             position: absolute;
-            top: 5px;
-            left: 8px;
-            font-size: 1.4rem;
+            top: 2px;
+            left: 5px;
+            font-size: 2.1rem; 
             font-weight: bold;
             color: #333;
             z-index: 2;
+            line-height: 1; /* Keeps the large letter from adding extra space around itself */
         }
 
-        /* The illustration in the bottom-right */
         .card-image {
             max-width: 70%;
             max-height: 70%;
@@ -84,7 +82,6 @@
             transform: translateY(-2px);
         }
 
-        /* Visual feedback when the sound is playing */
         .letter-card.playing {
             border-color: var(--highlight-color);
             background-color: #e8f8f0;
@@ -126,65 +123,20 @@
     </footer>
 
     <script>
-        /**
-         * 2. DATA (Likʼwala Alphabet Mapping)
-         * Each key is the letter displayed on the card.
-         * The order of keys here dictates the order on the web page.
-         */
         const likwalaMap = {
-            "a": "a", 
-            "b": "b", 
-            "c": "c", 
-            "c̓": "c_glottal", 
-            "d": "d", 
-            "dᶻ": "dz", 
-            "e": "e", 
-            "ə": "schwa", // Order updated: now follows "e"
-            "g": "g", 
-            "gʷ": "g_w", 
-            "ǧ": "g_wedge", 
-            "ǧʷ": "g_wedge_w", 
-            "h": "h", 
-            "i": "i", 
-            "k": "k", 
-            "k̓": "k_glottal", 
-            "kʷ": "k_w", 
-            "k̓ʷ": "k_w_glottal", 
-            "l": "l", 
-            "l̓": "l_glottal", 
-            "ł": "l_barred", 
-            "λ": "lambda", 
-            "ƛ": "lambda_barred", 
-            "ƛ̓": "lambda_barred_glottal", 
-            "m": "m", 
-            "m̓": "m_glottal", 
-            "n": "n", 
-            "n̓": "n_glottal", 
-            "o": "o", 
-            "p": "p", 
-            "p̓": "p_glottal", 
-            "q": "q", 
-            "qʷ": "q_w", 
-            "q̓": "q_glottal", 
-            "q̓ʷ": "q_w_glottal", 
-            "s": "s", 
-            "t": "t", 
-            "t̓": "t_glottal", 
-            "u": "u", 
-            "w": "w", 
-            "w̓": "w_glottal", 
-            "x": "x", 
-            "xʷ": "x_w", 
-            "x̌": "x_wedge", 
-            "x̌ʷ": "x_wedge_w", 
-            "y": "y", 
-            "y̓": "y_glottal", 
-            "ʔ": "glottal_stop"
+            "a": "a", "b": "b", "c": "c", "c̓": "c_glottal", "d": "d", "dᶻ": "dz", "e": "e", 
+            "ə": "schwa", "g": "g", "gʷ": "g_w", "ǧ": "g_wedge", "ǧʷ": "g_wedge_w", "h": "h", 
+            "i": "i", "k": "k", "k̓": "k_glottal", "kʷ": "k_w", "k̓ʷ": "k_w_glottal", "l": "l", 
+            "l̓": "l_glottal", "ł": "l_barred", "λ": "lambda", "ƛ": "lambda_barred", 
+            "ƛ̓": "lambda_barred_glottal", "m": "m", "m̓": "m_glottal", "n": "n", "n̓": "n_glottal", 
+            "o": "o", "p": "p", "p̓": "p_glottal", "q": "q", "qʷ": "q_w", "q̓": "q_glottal", 
+            "q̓ʷ": "q_w_glottal", "s": "s", "t": "t", "t̓": "t_glottal", "u": "u", "w": "w", 
+            "w̓": "w_glottal", "x": "x", "xʷ": "x_w", "x̌": "x_wedge", "x̌ʷ": "x_wedge_w", 
+            "y": "y", "y̓": "y_glottal", "ʔ": "glottal_stop"
         };
 
         const grid = document.getElementById('grid');
 
-        // Build the grid interface
         Object.keys(likwalaMap).forEach(letter => {
             const fileName = likwalaMap[letter];
             const card = document.createElement('div');
@@ -197,9 +149,7 @@
             const img = document.createElement('img');
             img.className = 'card-image';
             img.src = `images/${fileName}.png`; 
-            img.alt = `Illustration for ${letter}`;
 
-            // If an image is missing, don't show a broken icon
             img.onerror = () => { img.style.display = 'none'; };
 
             card.appendChild(label);
@@ -212,19 +162,10 @@
             grid.appendChild(card);
         });
 
-        /**
-         * 3. AUDIO LOGIC
-         * Handles playback and visual highlighting.
-         */
         function playAudio(fileName, element) {
             const audio = new Audio(`assets/${fileName}.mp3`);
-            
-            // Highlight card when audio starts
             audio.onplay = () => element.classList.add('playing');
-            
-            // Remove highlight when audio finishes
             audio.onended = () => element.classList.remove('playing');
-
             audio.play().catch(err => {
                 console.error(`Audio missing: assets/${fileName}.mp3`);
                 element.classList.remove('playing');
