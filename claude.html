@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alfabeto Português</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #00875A;
+      --green-light: #00B37A;
+      --gold: #E8C547;
+      --cream: #FAF6EE;
+      --dark: #1A1207;
+      --mid: #5A4A2A;
+      --card-bg: #FFFFFF;
+      --shadow: 0 4px 24px rgba(0,80,40,0.10);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--cream);
+      color: var(--dark);
+      min-height: 100vh;
+      padding: 0 0 60px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(0,135,90,0.07) 0%, transparent 50%),
+        radial-gradient(circle at 85% 80%, rgba(232,197,71,0.10) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 56px 24px 40px;
+    }
+
+    .flag-stripe {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .flag-stripe span {
+      display: block;
+      height: 5px;
+      border-radius: 3px;
+    }
+    .flag-stripe .s1 { width: 60px; background: var(--green); }
+    .flag-stripe .s2 { width: 40px; background: var(--gold); }
+    .flag-stripe .s3 { width: 60px; background: var(--green); }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--dark);
+      letter-spacing: -0.02em;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--green);
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      font-size: 1rem;
+      color: var(--mid);
+      font-weight: 300;
+      letter-spacing: 0.04em;
+    }
+
+    .grid-container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .alphabet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 14px;
+    }
+
+    .letter-card {
+      background: var(--card-bg);
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 20px 12px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.18s cubic-bezier(.34,1.56,.64,1),
+                  border-color 0.15s ease,
+                  box-shadow 0.18s ease,
+                  background 0.15s ease;
+      box-shadow: var(--shadow);
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .letter-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(0,135,90,0.15), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .letter-card:hover {
+      transform: translateY(-4px) scale(1.03);
+      border-color: var(--green-light);
+      box-shadow: 0 12px 36px rgba(0,135,90,0.18);
+    }
+
+    .letter-card:active {
+      transform: scale(0.96);
+    }
+
+    .letter-card.playing {
+      border-color: var(--green);
+      background: #F0FBF6;
+      box-shadow: 0 8px 32px rgba(0,135,90,0.25);
+    }
+
+    .letter-card.playing::after {
+      opacity: 1;
+    }
+
+    .letter-upper {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1;
+      display: block;
+    }
+
+    .letter-lower {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--mid);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .letter-name {
+      margin-top: 8px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--green);
+      opacity: 0.85;
+    }
+
+    .sound-indicator {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .letter-card.playing .sound-indicator {
+      opacity: 1;
+      animation: pulse 0.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.5; }
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin: 32px 0 14px;
+      padding-left: 4px;
+      opacity: 0.7;
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      margin-top: 52px;
+      font-size: 0.8rem;
+      color: var(--mid);
+      opacity: 0.6;
+    }
+
+    /* Ripple on click */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(0,135,90,0.25);
+      width: 10px;
+      height: 10px;
+      transform: scale(0);
+      animation: ripple-anim 0.5s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes ripple-anim {
+      to { transform: scale(18); opacity: 0; }
+    }
+
+    @media (max-width: 480px) {
+      .alphabet-grid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; }
+      .letter-upper { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag-stripe">
+    <span class="s1"></span>
+    <span class="s2"></span>
+    <span class="s3"></span>
+  </div>
+  <h1>O <em>Alfabeto</em><br>Português</h1>
+  <p class="subtitle">Click any letter to hear it pronounced · Brazilian Portuguese</p>
+</header>
+
+<div class="grid-container">
+  <p class="section-label">The 26 Letters</p>
+  <div class="alphabet-grid" id="grid"></div>
+</div>
+
+<footer>
+  <p>Sounds from the <code>assets/</code> folder &nbsp;·&nbsp; Brazilian Portuguese</p>
+</footer>
+
+<script>
+  // Brazilian Portuguese alphabet with letter names
+  const letters = [
+    { letter: 'A', name: 'á' },
+    { letter: 'B', name: 'bê' },
+    { letter: 'C', name: 'cê' },
+    { letter: 'D', name: 'dê' },
+    { letter: 'E', name: 'é' },
+    { letter: 'F', name: 'efe' },
+    { letter: 'G', name: 'gê' },
+    { letter: 'H', name: 'agá' },
+    { letter: 'I', name: 'i' },
+    { letter: 'J', name: 'jota' },
+    { letter: 'K', name: 'cá' },
+    { letter: 'L', name: 'ele' },
+    { letter: 'M', name: 'eme' },
+    { letter: 'N', name: 'ene' },
+    { letter: 'O', name: 'ó' },
+    { letter: 'P', name: 'pê' },
+    { letter: 'Q', name: 'quê' },
+    { letter: 'R', name: 'erre' },
+    { letter: 'S', name: 'esse' },
+    { letter: 'T', name: 'tê' },
+    { letter: 'U', name: 'u' },
+    { letter: 'V', name: 'vê' },
+    { letter: 'W', name: 'dáblio' },
+    { letter: 'X', name: 'xis' },
+    { letter: 'Y', name: 'ípsilon' },
+    { letter: 'Z', name: 'zê' },
+  ];
+
+  const grid = document.getElementById('grid');
+  let currentAudio = null;
+  let currentCard = null;
+
+  letters.forEach(({ letter, name }) => {
+    const card = document.createElement('div');
+    card.className = 'letter-card';
+    card.innerHTML = `
+      <span class="letter-upper">${letter}</span>
+      <span class="letter-lower">${letter.toLowerCase()}</span>
+      <div class="letter-name">${name}</div>
+      <div class="sound-indicator"></div>
+    `;
+
+    card.addEventListener('click', (e) => {
+      // Ripple effect
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      const rect = card.getBoundingClientRect();
+      ripple.style.left = (e.clientX - rect.left - 5) + 'px';
+      ripple.style.top = (e.clientY - rect.top - 5) + 'px';
+      card.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+
+      // Stop previous audio
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+      if (currentCard) {
+        currentCard.classList.remove('playing');
+      }
+
+      // Play new audio
+      // File naming: assets/A.mp3, assets/B.mp3, etc.
+      // Adjust the path/extension below to match your files
+      const audioSrc = `assets/${letter}.mp3`;
+      const audio = new Audio(audioSrc);
+      currentAudio = audio;
+      currentCard = card;
+
+      card.classList.add('playing');
+
+      audio.play().catch(() => {
+        // If file not found or not yet provided, show a brief visual feedback
+        card.classList.remove('playing');
+      });
+
+      audio.addEventListener('ended', () => {
+        card.classList.remove('playing');
+        currentAudio = null;
+        currentCard = null;
+      });
+    });
+
+    grid.appendChild(card);
+  });
+</script>
+</body>
+</html>
