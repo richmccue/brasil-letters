@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L'Alphabet Français</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0d1b2a;
+      --cream:  #f5f0e8;
+      --gold:   #c9a84c;
+      --gold2:  #e8c96a;
+      --red:    #b5382b;
+      --blue:   #2563a8;
+      --text:   #1a1209;
+    }
+
+    body {
+      background-color: var(--cream);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── decorative background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 10% 10%, rgba(201,168,76,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 90% 90%, rgba(37,99,168,.10) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── header ── */
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3.5rem 1rem 2rem;
+      border-bottom: 1.5px solid rgba(201,168,76,.35);
+    }
+
+    .flag-stripe {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 1.5rem;
+    }
+    .flag-stripe span {
+      width: 10px; height: 42px; border-radius: 3px;
+    }
+    .flag-stripe .bl { background: var(--blue); }
+    .flag-stripe .wh { background: #fff; border: 1px solid #ddd; }
+    .flag-stripe .rd { background: var(--red); }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      line-height: 1;
+      color: var(--navy);
+    }
+    header h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    header p {
+      margin-top: .8rem;
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: #555;
+      letter-spacing: .04em;
+    }
+
+    /* ── grid ── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1.1rem;
+    }
+
+    /* ── card ── */
+    .card {
+      position: relative;
+      background: #fff;
+      border: 1.5px solid rgba(201,168,76,.3);
+      border-radius: 14px;
+      padding: 1.4rem .8rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .45rem;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,.06);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0,0,0,.10);
+      border-color: var(--gold);
+    }
+    .card:active, .card.playing {
+      transform: scale(.96);
+      border-color: var(--gold2);
+      background: #fffbf0;
+    }
+
+    /* ripple */
+    .card .ripple {
+      position: absolute;
+      width: 0; height: 0;
+      border-radius: 50%;
+      background: rgba(201,168,76,.25);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: ripple .55s ease-out forwards;
+    }
+    @keyframes ripple {
+      to { width: 240px; height: 240px; opacity: 0; }
+    }
+
+    .card .letter {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1;
+    }
+
+    .card .phonetic {
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: #888;
+    }
+
+    /* speaker icon */
+    .card .icon {
+      width: 22px; height: 22px;
+      margin-top: .2rem;
+      opacity: .35;
+      transition: opacity .18s;
+    }
+    .card:hover .icon, .card.playing .icon { opacity: .85; }
+
+    .card.playing .icon { animation: pulse .5s ease infinite alternate; }
+    @keyframes pulse { from { opacity: .5; } to { opacity: 1; } }
+
+    /* ── toast ── */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--navy);
+      color: #fff;
+      font-size: .88rem;
+      padding: .55rem 1.2rem;
+      border-radius: 99px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s, transform .3s;
+      z-index: 100;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── footer ── */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 1.5rem;
+      font-size: .8rem;
+      color: #aaa;
+      border-top: 1px solid rgba(201,168,76,.2);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag-stripe">
+    <span class="bl"></span><span class="wh"></span><span class="rd"></span>
+  </div>
+  <h1>L'<em>Alphabet</em> Français</h1>
+  <p>Click any letter to hear its French pronunciation</p>
+</header>
+
+<main id="grid"></main>
+
+<div id="toast"></div>
+
+<footer>Place your audio files in <code>assets/a.mp3</code>, <code>assets/b.mp3</code> … <code>assets/z.mp3</code></footer>
+
+<script>
+  const letters = [
+    { l: 'A', ph: 'ah' },
+    { l: 'B', ph: 'bay' },
+    { l: 'C', ph: 'say' },
+    { l: 'D', ph: 'day' },
+    { l: 'E', ph: 'uh' },
+    { l: 'F', ph: 'ef' },
+    { l: 'G', ph: 'zhay' },
+    { l: 'H', ph: 'ash' },
+    { l: 'I', ph: 'ee' },
+    { l: 'J', ph: 'zhee' },
+    { l: 'K', ph: 'kah' },
+    { l: 'L', ph: 'el' },
+    { l: 'M', ph: 'em' },
+    { l: 'N', ph: 'en' },
+    { l: 'O', ph: 'oh' },
+    { l: 'P', ph: 'pay' },
+    { l: 'Q', ph: 'kew' },
+    { l: 'R', ph: 'air' },
+    { l: 'S', ph: 'ess' },
+    { l: 'T', ph: 'tay' },
+    { l: 'U', ph: 'ew' },
+    { l: 'V', ph: 'vay' },
+    { l: 'W', ph: 'doo-bluh-vay' },
+    { l: 'X', ph: 'eeks' },
+    { l: 'Y', ph: 'ee-grek' },
+    { l: 'Z', ph: 'zed' },
+  ];
+
+  const grid = document.getElementById('grid');
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  let currentAudio = null;
+  let currentCard = null;
+
+  letters.forEach(({ l, ph }) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <span class="letter">${l}</span>
+      <span class="phonetic">${ph}</span>
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      </svg>
+    `;
+
+    card.addEventListener('click', (e) => {
+      // ripple
+      const rect = card.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.left = (e.clientX - rect.left) + 'px';
+      ripple.style.top  = (e.clientY - rect.top)  + 'px';
+      card.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+
+      // audio
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        if (currentCard) currentCard.classList.remove('playing');
+      }
+
+      const src = `assets/${l.toLowerCase()}.mp3`;
+      const audio = new Audio(src);
+      currentAudio = audio;
+      currentCard  = card;
+
+      audio.play().then(() => {
+        card.classList.add('playing');
+        showToast(`Playing "${l}" — ${ph}`);
+      }).catch(() => {
+        showToast(`⚠ No audio file found: ${src}`);
+      });
+
+      audio.addEventListener('ended', () => {
+        card.classList.remove('playing');
+        currentAudio = null;
+        currentCard  = null;
+      });
+    });
+
+    grid.appendChild(card);
+  });
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>

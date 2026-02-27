@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alfabeto Brasileiro — Learn Brazilian Portuguese</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #009c3b;
+      --yellow: #ffdf00;
+      --blue: #002776;
+      --cream: #fdf8f0;
+      --dark: #1a1208;
+      --card-bg: #ffffff;
+      --shadow: rgba(0, 39, 118, 0.12);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 156, 59, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 39, 118, 0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 10% 60%, rgba(255, 223, 0, 0.1) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 0 48px;
+    }
+
+    .flag-stripe {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+
+    .flag-stripe span {
+      display: block;
+      height: 4px;
+      border-radius: 2px;
+    }
+    .flag-stripe .s1 { width: 40px; background: var(--green); }
+    .flag-stripe .s2 { width: 60px; background: var(--yellow); }
+    .flag-stripe .s3 { width: 40px; background: var(--blue); }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.6rem, 6vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--blue);
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--green);
+    }
+
+    .subtitle {
+      margin-top: 14px;
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: #5a5040;
+      letter-spacing: 0.01em;
+    }
+
+    .instruction {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      padding: 10px 20px;
+      background: var(--blue);
+      color: var(--yellow);
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .alphabet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .letter-card {
+      background: var(--card-bg);
+      border: 2px solid transparent;
+      border-radius: 20px;
+      padding: 28px 12px 20px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      box-shadow: 0 2px 12px var(--shadow);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .letter-card:hover {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 10px 30px var(--shadow);
+      border-color: var(--green);
+    }
+
+    .letter-card.playing {
+      background: var(--blue);
+      border-color: var(--blue);
+      transform: scale(0.97);
+    }
+
+    .letter-card.playing .letter { color: var(--yellow); }
+    .letter-card.playing .letter-name { color: rgba(255,255,255,0.7); }
+    .letter-card.playing .phonetic { color: rgba(255,255,255,0.5); }
+
+    .letter {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--blue);
+      display: block;
+      transition: color 0.18s ease;
+    }
+
+    .letter-name {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #6b5e40;
+      margin-top: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      display: block;
+      transition: color 0.18s ease;
+    }
+
+    .phonetic {
+      font-size: 0.72rem;
+      color: #9c8c6a;
+      margin-top: 5px;
+      font-style: italic;
+      display: block;
+      line-height: 1.3;
+      transition: color 0.18s ease;
+    }
+
+    @keyframes ripple {
+      0% { transform: scale(0); opacity: 0.4; }
+      100% { transform: scale(4); opacity: 0; }
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      background: rgba(0, 156, 59, 0.35);
+      top: 50%;
+      left: 50%;
+      margin-left: -30px;
+      margin-top: -30px;
+      animation: ripple 0.55s ease-out forwards;
+      pointer-events: none;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin: 40px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(0, 156, 59, 0.25);
+    }
+
+    footer {
+      text-align: center;
+      padding-top: 56px;
+      font-size: 0.8rem;
+      color: #9c8c6a;
+      letter-spacing: 0.02em;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 480px) {
+      .alphabet-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+      .letter { font-size: 2.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="flag-stripe">
+      <span class="s1"></span>
+      <span class="s2"></span>
+      <span class="s3"></span>
+    </div>
+    <h1>O <em>Alfabeto</em><br>Brasileiro</h1>
+    <p class="subtitle">Learn to pronounce every letter of the Brazilian Portuguese alphabet</p>
+    <div class="instruction">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+      </svg>
+      Click any letter to hear it
+    </div>
+  </header>
+
+  <div class="section-label">All 26 Letters</div>
+  <div class="alphabet-grid" id="grid"></div>
+
+  <footer>
+    <p>Pronúncia do Português Brasileiro</p>
+    <p style="margin-top:6px;font-size:0.72rem;">Audio files are loaded from the <code>assets/</code> folder (e.g. <code>assets/a.mp3</code>)</p>
+  </footer>
+
+</div>
+
+<script>
+  // Each letter: its Portuguese name, and a phonetic guide for English speakers
+  const letters = [
+    { letter: 'A', name: 'A',       phonetic: 'like "ah"' },
+    { letter: 'B', name: 'Bê',      phonetic: 'like "beh"' },
+    { letter: 'C', name: 'Cê',      phonetic: 'like "seh"' },
+    { letter: 'D', name: 'Dê',      phonetic: 'like "deh"' },
+    { letter: 'E', name: 'E',       phonetic: 'like "eh"' },
+    { letter: 'F', name: 'Efe',     phonetic: '"EH-feh"' },
+    { letter: 'G', name: 'Gê',      phonetic: 'like "zheh"' },
+    { letter: 'H', name: 'Agá',     phonetic: '"ah-GAH"' },
+    { letter: 'I', name: 'I',       phonetic: 'like "ee"' },
+    { letter: 'J', name: 'Jota',    phonetic: '"ZHOH-tah"' },
+    { letter: 'K', name: 'Cá',      phonetic: 'like "kah"' },
+    { letter: 'L', name: 'Ele',     phonetic: '"EH-leh"' },
+    { letter: 'M', name: 'Eme',     phonetic: '"EH-meh"' },
+    { letter: 'N', name: 'Ene',     phonetic: '"EH-neh"' },
+    { letter: 'O', name: 'O',       phonetic: 'like "oh"' },
+    { letter: 'P', name: 'Pê',      phonetic: 'like "peh"' },
+    { letter: 'Q', name: 'Quê',     phonetic: 'like "keh"' },
+    { letter: 'R', name: 'Erre',    phonetic: '"EH-heh"' },
+    { letter: 'S', name: 'Esse',    phonetic: '"EH-seh"' },
+    { letter: 'T', name: 'Tê',      phonetic: 'like "teh"' },
+    { letter: 'U', name: 'U',       phonetic: 'like "oo"' },
+    { letter: 'V', name: 'Vê',      phonetic: 'like "veh"' },
+    { letter: 'W', name: 'Dáblio',  phonetic: '"DAH-blee-oh"' },
+    { letter: 'X', name: 'Xis',     phonetic: '"shees"' },
+    { letter: 'Y', name: 'Ípsilon', phonetic: '"EEP-see-lon"' },
+    { letter: 'Z', name: 'Zê',      phonetic: 'like "zeh"' },
+  ];
+
+  const grid = document.getElementById('grid');
+
+  letters.forEach(({ letter, name, phonetic }) => {
+    const card = document.createElement('div');
+    card.className = 'letter-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Letter ${letter}, pronounced ${name}`);
+    card.innerHTML = `
+      <span class="letter">${letter}</span>
+      <span class="letter-name">${name}</span>
+      <span class="phonetic">${phonetic}</span>
+    `;
+
+    card.addEventListener('click', () => {
+      // Ripple effect
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      card.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+
+      // Visual playing state
+      card.classList.add('playing');
+      setTimeout(() => card.classList.remove('playing'), 700);
+
+      // Try mp3, fall back to wav
+      const base = `assets/${letter.toLowerCase()}`;
+      const audio = new Audio(`${base}.mp3`);
+      audio.play().catch(() => {
+        new Audio(`${base}.wav`).play().catch(err => {
+          console.warn(`No audio found for letter "${letter}". Expected: ${base}.mp3 or ${base}.wav`);
+        });
+      });
+    });
+
+    grid.appendChild(card);
+  });
+</script>
+
+</body>
+</html>
